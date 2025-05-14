@@ -4,26 +4,39 @@ import { TaskItem } from "../../types";
 
 interface IDataContext {
     tasks: TaskItem[];
+    isModalOpen: boolean;
+    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    mobileMenu: boolean;
+    setMobileMenu: React.Dispatch<React.SetStateAction<boolean>>;
     fetchData: () => Promise<void>;
     handleDelete: (id: number) => Promise<void>;
-    handleSubmit: (title: string, description?: string) => Promise<void>;
+    handleComplete: (id: number) => Promise<void>;
+    handleSubmit: (title: string, dueDate: string, description?: string) => Promise<void>;
 }
 
 export const DataContext = React.createContext<IDataContext>({
     tasks: [],
+    isModalOpen: false,
+    setIsModalOpen: () => {},
+    mobileMenu: false,
+    setMobileMenu: () => {},
     fetchData: async () => Promise.resolve(),
     handleDelete: async () => Promise.resolve(),
-    handleSubmit: function ( title: string, description?: string): Promise<void> {
+    handleComplete: async () => Promise.resolve(),
+    handleSubmit: function ( title: string, dueDate: string, description?: string): Promise<void> {
         throw new Error("Function not implemented.");
     }
 });
 
 export const DataProvider = ({children}: {children: React.ReactNode}) => {
     const [tasks, setTasks] = useState<TaskItem[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mobileMenu, setMobileMenu] = useState(false);
 
-    const handleSubmit = async ( title: string, description?: string ): Promise<void> => {
+    const handleSubmit = async ( title: string, dueDate: string, description?: string ): Promise<void> => {
+
         try {
-          const response = await fetch("http://localhost:3000/api/task", {
+          const response = await fetch("/api/task", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -33,7 +46,7 @@ export const DataProvider = ({children}: {children: React.ReactNode}) => {
               description: description || "",
               isCompleted: false,
               createdAt: new Date().toISOString(),
-              dueDate: null,
+              dueDate: new Date(dueDate).toISOString(),
             }),
           });
       
@@ -52,7 +65,7 @@ export const DataProvider = ({children}: {children: React.ReactNode}) => {
 
     const fetchData = async() => {
         try{
-        const response = await fetch('http://localhost:3000/api/task')
+        const response = await fetch('/api/task')
         if(response.ok){
             const data = await response.json();
             const users: TaskItem[] = data;
@@ -68,19 +81,37 @@ export const DataProvider = ({children}: {children: React.ReactNode}) => {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5113/api/TaskItems/${id}`, {
+            const response = await fetch(`/api/task?id=${id}`, {
                 method: 'DELETE',
-        });
+            });
 
-        if (response.ok) {
-            alert("Student deleted successfully");
-            fetchData();
-        } else {
-            alert("Error deleting student");
-        }
+            if (response.ok) {
+                alert("Student deleted successfully");
+                fetchData();
+            } else {
+                alert("Error deleting student");
+            }
         } catch (error) {
             console.error("An error occurred:", error);
             alert("Failed to delete student");
+        }
+    };
+
+    const handleComplete = async (id: number) => {
+        try {
+            const response = await fetch(`/api/task?id=${id}`, {
+                method: 'PATCH',
+            });
+
+            if (response.ok) {
+                alert('Task marked as completed!');
+                fetchData();
+            } else {
+                alert('Failed to update task.');
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+            alert('Something went wrong.');
         }
     };
     
@@ -89,7 +120,16 @@ export const DataProvider = ({children}: {children: React.ReactNode}) => {
     }, []);
 
     return (
-        <DataContext.Provider value={{tasks: tasks, fetchData: fetchData, handleDelete: handleDelete, handleSubmit: handleSubmit}}>
+        <DataContext.Provider value={{
+            tasks: tasks,
+            fetchData: fetchData,
+            handleDelete: handleDelete,
+            handleComplete: handleComplete,
+            handleSubmit: handleSubmit,
+            isModalOpen: isModalOpen,
+            setIsModalOpen: setIsModalOpen,
+            mobileMenu: mobileMenu,
+            setMobileMenu: setMobileMenu}}>
             {children}
         </DataContext.Provider>
     )

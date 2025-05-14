@@ -12,6 +12,7 @@ const Modal = ({ isVisible, onClose }: ModalProps) => {
   const { handleSubmit } = useContext(DataContext)
   const [Title, SetTitle] = useState("");
   const [Description, SetDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -37,14 +38,18 @@ const Modal = ({ isVisible, onClose }: ModalProps) => {
             </svg>
           </button>
         </div>
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(Title, Description); }} className="flex flex-col w-[90%] justify-self-center gap-2 h-full">
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(Title, dueDate, Description); }} className="flex flex-col w-[90%] justify-self-center gap-2 h-full">
           <div className="flex flex-col gap-2 overflow-hidden">
             <label htmlFor="Title" className="text-black font-medium">Title:</label>
-            <input type="text" name="Title" className="border-gray-300 border-2" onChange={(e) => SetTitle(e.target.value)} />
+            <input type="text" name="Title" className="border-gray-300 border-2" value={Title} onChange={(e) => SetTitle(e.target.value)} required />
           </div>
           <div className="flex flex-col">
             <label htmlFor="Description" className="text-black font-medium">Description:</label>
-            <textarea name="Description" className="border-gray-300 border-2" onChange={(e) => SetDescription(e.target.value)}></textarea>
+            <textarea name="Description" className="border-gray-300 border-2" value={Description} onChange={(e) => SetDescription(e.target.value)} required></textarea>
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="DueDate" className="text-black font-medium">Due Date:</label>
+            <input type="date" name="DueDate" className="border-gray-300 border-2" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
           </div>
           <div className="flex justify-end">
             <button type="submit" className="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded hover:bg-blue-600">Add Task</button>

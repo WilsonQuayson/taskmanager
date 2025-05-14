@@ -46,5 +46,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ error: "Failed to delete task" });
         }
     }
-    // Handle other CRUD operations as needed
+    else if (req.method === "PATCH") {
+        const { id } = req.query;
+
+        if (!id || typeof id !== 'string') {
+            res.status(400).json({ error: "Missing or invalid task ID" });
+            return;
+        }
+
+        const taskId = parseInt(id, 10);
+
+        if (isNaN(taskId)) {
+            res.status(400).json({ error: "Invalid task ID" });
+            return;
+        }
+
+        const response = await fetch(`http://localhost:5113/api/TaskItems/${taskId}/complete`, {
+            method: 'PATCH',
+        });
+
+        if (response.ok) {
+            res.status(204).end(); // Success, no content
+        } else {
+            res.status(500).json({ error: "Failed to update task" });
+        }
+    }
 }
