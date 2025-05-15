@@ -46,3 +46,17 @@ body {
   transition: opacity 200ms ease, transform 200ms ease;
 }
 
+.backdrop-enter {
+  opacity: 0;
+}
+.backdrop-enter-active {
+  opacity: 0.2;
+  transition: opacity 200ms;
+}
+.backdrop-exit {
+  opacity: 0.2;
+}
+.backdrop-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
+}

@@ -12,6 +12,8 @@ interface IDataContext {
     handleDelete: (id: number) => Promise<void>;
     handleComplete: (id: number) => Promise<void>;
     handleSubmit: (title: string, dueDate: string, description?: string) => Promise<void>;
+    subMenu: boolean;
+    setSubMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const DataContext = React.createContext<IDataContext>({
@@ -25,13 +27,16 @@ export const DataContext = React.createContext<IDataContext>({
     handleComplete: async () => Promise.resolve(),
     handleSubmit: function ( title: string, dueDate: string, description?: string): Promise<void> {
         throw new Error("Function not implemented.");
-    }
+    },
+    subMenu: false,
+    setSubMenu: () => {},
 });
 
 export const DataProvider = ({children}: {children: React.ReactNode}) => {
     const [tasks, setTasks] = useState<TaskItem[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mobileMenu, setMobileMenu] = useState(false);
+    const [subMenu, setSubMenu] = useState(false);
 
     const handleSubmit = async ( title: string, dueDate: string, description?: string ): Promise<void> => {
 
@@ -129,7 +134,10 @@ export const DataProvider = ({children}: {children: React.ReactNode}) => {
             isModalOpen: isModalOpen,
             setIsModalOpen: setIsModalOpen,
             mobileMenu: mobileMenu,
-            setMobileMenu: setMobileMenu}}>
+            setMobileMenu: setMobileMenu,
+            subMenu: subMenu,
+            setSubMenu: setSubMenu
+            }}>
             {children}
         </DataContext.Provider>
     )

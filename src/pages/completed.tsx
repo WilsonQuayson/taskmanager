@@ -9,7 +9,7 @@ import NavDesktop from "@/components/NavDesktop";
 
 
 
-const Home = () => {
+const CompletedTasks = () => {
   const { tasks, fetchData, handleDelete, isModalOpen, setIsModalOpen, mobileMenu, handleComplete, subMenu, setSubMenu } = useContext(DataContext);
   const [taskMenuIndex, SetTaskMenuIndex] = useState<number | null>(null);
   const nodeRefs = useRef<Array<React.RefObject<HTMLDivElement>>>([]);
@@ -70,7 +70,7 @@ const Home = () => {
       {/* INDEX */}
       <ul className="flex flex-col gap-6 ml-auto mr-auto mt-4">
         { tasks
-          .filter(task => !task.isCompleted)
+          .filter(task => task.isCompleted)
           .map((task, index) => (
             <li key={index} className="bg-white drop-shadow-xl p-6 rounded-2xl w-60 h-60 flex flex-col justify-between relative">
               <div>
@@ -122,4 +122,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default CompletedTasks;
